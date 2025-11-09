@@ -16,6 +16,6 @@ placeholders-are-not-allowed-message: <red>Placeholders are not allowed!
 
 
 #do not replace any placeholders in item's name
-disable-placeholders-in-name: true
+disable-placeholders-in-name: false
 #do not replace any placeholders in item's lore
 disable-placeholders-in-lore: false
