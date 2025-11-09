@@ -36,7 +36,7 @@ public class ItemPacketListener {
                 List<ItemStack> packetItems = event.getPacket().getItemListModifier().read(0);
                 List<ItemStack> items = new ArrayList<>(packetItems.size());
 
-                for(ItemStack item : packetItems) {
+                for (ItemStack item : packetItems) {
                     items.add(parseItem(event.getPlayer(), item));
                 }
 
@@ -53,7 +53,7 @@ public class ItemPacketListener {
                 PacketContainer packet = event.getPacket();
                 int entityId = packet.getIntegers().read(0);
 
-                if(entityId != event.getPlayer().getEntityId())
+                if (entityId != event.getPlayer().getEntityId())
                     return;
 
                 List<Pair<EnumWrappers.ItemSlot, ItemStack>> packetItems = event.getPacket().getSlotStackPairLists().read(0);
@@ -78,48 +78,52 @@ public class ItemPacketListener {
     }
 
     private ItemStack parseItem(Player player, ItemStack item) {
-        if(item == null || !item.hasItemMeta())
+
+        if (item == null || item.getType().isAir())
             return item;
 
-        ItemMeta meta = item.getItemMeta();
+        if (item.hasItemMeta()) {
+            ItemMeta meta = item.getItemMeta();
 
-        List<String> whitelistedContainers = PIMConfig.getInstance().getWhitelistedPersistentDataContainers();
+            List<String> whitelistedContainers = PIMConfig.getInstance().getWhitelistedPersistentDataContainers();
 
-        if (!whitelistedContainers.isEmpty() &&
-            whitelistedContainers.stream().noneMatch(container ->
-                meta.getPersistentDataContainer().has(new NamespacedKey(PlaceholderItemMeta.getInstance(), container))
-            )) {
-            return item;
-        }
-
-        if(!PIMConfig.getInstance().getDisablePlaceholdersInName()) {
-            String itemName = PlaceholderAPI.setPlaceholders(player, MiniMessage.miniMessage().serialize(item.effectiveName()));
-            meta.itemName(MiniMessage.miniMessage().deserialize(itemName));
-
-            if (meta.hasDisplayName()) {
-                String displayName = PlaceholderAPI.setPlaceholders(player, MiniMessage.miniMessage().serialize(Objects.requireNonNull(meta.displayName())));
-                meta.displayName(MiniMessage.miniMessage().deserialize(displayName));
-            }
-        }
-
-        List<Component> lore = meta.lore();
-        if(lore != null && !PIMConfig.getInstance().getDisablePlaceholdersInLore()) {
-            ArrayList<Component> newLore = new ArrayList<>();
-
-            for(Component component : lore) {
-                String line = PlaceholderAPI.setPlaceholders(player, MiniMessage.miniMessage().serialize(component));
-                newLore.add(MiniMessage.miniMessage().deserialize(line));
+            if (!whitelistedContainers.isEmpty() &&
+                    whitelistedContainers.stream().noneMatch(container ->
+                            meta.getPersistentDataContainer().has(new NamespacedKey(PlaceholderItemMeta.getInstance(), container))
+                    )) {
+                return item;
             }
 
-            meta.lore(newLore);
-        }
+            if (!PIMConfig.getInstance().getDisablePlaceholdersInName()) {
+                String itemName = PlaceholderAPI.setPlaceholders(player, MiniMessage.miniMessage().serialize(item.effectiveName()));
+                meta.itemName(MiniMessage.miniMessage().deserialize(itemName));
 
-        item.setItemMeta(meta);
+                if (meta.hasDisplayName()) {
+                    String displayName = PlaceholderAPI.setPlaceholders(player, MiniMessage.miniMessage().serialize(Objects.requireNonNull(meta.displayName())));
+                    meta.displayName(MiniMessage.miniMessage().deserialize(displayName));
+                }
+            }
+
+            List<Component> lore = meta.lore();
+            if (lore != null && !PIMConfig.getInstance().getDisablePlaceholdersInLore()) {
+                ArrayList<Component> newLore = new ArrayList<>();
+
+                for (Component component : lore) {
+                    String line = PlaceholderAPI.setPlaceholders(player, MiniMessage.miniMessage().serialize(component));
+                    newLore.add(MiniMessage.miniMessage().deserialize(line));
+                }
+
+                meta.lore(newLore);
+            }
+
+            item.setItemMeta(meta);
+
+        }
 
         var event = new ItemParseEvent(player, item);
 
         Bukkit.getPluginManager().callEvent(event);
-        
+
         return event.getItem();
     }
 }

@@ -41,6 +41,15 @@ public final class PlaceholderItemMeta extends JavaPlugin {
         anvilListener = new AnvilListener();
         silentAnvilListener = new SilentAnvilListener();
 
+        load();
+
+        PaperCommandManager commandManager = new PaperCommandManager(this);
+        commandManager.registerCommand(new PIMCommand());
+
+        ConsoleLogger.info(String.format("PlaceholderItemMeta [%s] has been enabled!", version));
+    }
+
+    public void load(){
         var registerSilentListener = PIMConfig.getInstance().getBlockAnvilPlaceholdersSilently();
 
         //Player can click fast and get renamed item. To prevent it, need to register both normal and silent listeners
@@ -48,11 +57,6 @@ public final class PlaceholderItemMeta extends JavaPlugin {
             Bukkit.getPluginManager().registerEvents(anvilListener, this);
         if (registerSilentListener)
             Bukkit.getPluginManager().registerEvents(silentAnvilListener, this);
-
-        PaperCommandManager commandManager = new PaperCommandManager(this);
-        commandManager.registerCommand(new PIMCommand());
-
-        ConsoleLogger.info(String.format("PlaceholderItemMeta [%s] has been enabled!", version));
     }
 
     @Override
