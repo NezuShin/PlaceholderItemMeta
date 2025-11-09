@@ -10,9 +10,11 @@ import com.comphenix.protocol.wrappers.EnumWrappers;
 import com.comphenix.protocol.wrappers.Pair;
 import gg.bonka.placeholderItemMeta.PlaceholderItemMeta;
 import gg.bonka.placeholderItemMeta.configuration.PIMConfig;
+import gg.bonka.placeholderItemMeta.items.event.ItemParseEvent;
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -90,16 +92,18 @@ public class ItemPacketListener {
             return item;
         }
 
-        String itemName = PlaceholderAPI.setPlaceholders(player, MiniMessage.miniMessage().serialize(item.effectiveName()));
-        meta.itemName(MiniMessage.miniMessage().deserialize(itemName));
+        if(!PIMConfig.getInstance().getDisablePlaceholdersInName()) {
+            String itemName = PlaceholderAPI.setPlaceholders(player, MiniMessage.miniMessage().serialize(item.effectiveName()));
+            meta.itemName(MiniMessage.miniMessage().deserialize(itemName));
 
-        if(meta.hasDisplayName()) {
-            String displayName = PlaceholderAPI.setPlaceholders(player, MiniMessage.miniMessage().serialize(Objects.requireNonNull(meta.displayName())));
-            meta.displayName(MiniMessage.miniMessage().deserialize(displayName));
+            if (meta.hasDisplayName()) {
+                String displayName = PlaceholderAPI.setPlaceholders(player, MiniMessage.miniMessage().serialize(Objects.requireNonNull(meta.displayName())));
+                meta.displayName(MiniMessage.miniMessage().deserialize(displayName));
+            }
         }
 
         List<Component> lore = meta.lore();
-        if(lore != null) {
+        if(lore != null && !PIMConfig.getInstance().getDisablePlaceholdersInLore()) {
             ArrayList<Component> newLore = new ArrayList<>();
 
             for(Component component : lore) {
@@ -111,6 +115,11 @@ public class ItemPacketListener {
         }
 
         item.setItemMeta(meta);
-        return item;
+
+        var event = new ItemParseEvent(player, item);
+
+        Bukkit.getPluginManager().callEvent(event);
+        
+        return event.getItem();
     }
 }

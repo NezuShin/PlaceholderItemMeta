@@ -6,3 +6,11 @@ whitelisted-persistent-data-containers: []
 
 # Blocks players from using placeholders when renaming an item in an anvil.
 block-anvil-placeholders: false
+
+#Just remove result item in anvil inventory when name contains placeholder
+block-anvil-placeholders-silently: false
+  
+placeholders-are-not-allowed-message:  "<red>Placeholders are not allowed!"
+
+disable-placeholders-in-name: false
+disable-placeholders-in-lore: false

@@ -5,6 +5,7 @@ import gg.bonka.placeholderItemMeta.commands.PIMCommand;
 import gg.bonka.placeholderItemMeta.configuration.PIMConfig;
 import gg.bonka.placeholderItemMeta.items.listener.AnvilListener;
 import gg.bonka.placeholderItemMeta.items.listener.ItemPacketListener;
+import gg.bonka.placeholderItemMeta.items.listener.SilentAnvilListener;
 import gg.bonka.placeholderItemMeta.logging.ConsoleLogger;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,10 +22,11 @@ public final class PlaceholderItemMeta extends JavaPlugin {
     private static PlaceholderItemMeta instance;
 
     private AnvilListener anvilListener;
+    private SilentAnvilListener silentAnvilListener;
 
     @Override
     public void onEnable() {
-        if(instance != null)
+        if (instance != null)
             throw new IllegalStateException("PlaceholderItemMeta instance already exists!");
 
         instance = this;
@@ -37,8 +39,15 @@ public final class PlaceholderItemMeta extends JavaPlugin {
         //Bukkit.getPluginManager().registerEvents(new PlayerJoinListener(), this);
 
         anvilListener = new AnvilListener();
-        if(PIMConfig.getInstance().getBlockAnvilPlaceholders())
+        silentAnvilListener = new SilentAnvilListener();
+
+        var registerSilentListener = PIMConfig.getInstance().getBlockAnvilPlaceholdersSilently();
+
+        //Player can click fast and get renamed item. To prevent it, need to register both normal and silent listeners
+        if (PIMConfig.getInstance().getBlockAnvilPlaceholders() || registerSilentListener)
             Bukkit.getPluginManager().registerEvents(anvilListener, this);
+        if (registerSilentListener)
+            Bukkit.getPluginManager().registerEvents(silentAnvilListener, this);
 
         PaperCommandManager commandManager = new PaperCommandManager(this);
         commandManager.registerCommand(new PIMCommand());

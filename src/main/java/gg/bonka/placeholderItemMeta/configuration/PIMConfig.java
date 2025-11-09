@@ -15,6 +15,11 @@ public class PIMConfig extends CustomConfig {
 
     private List<String> whitelistedPersistentDataContainers;
     private Boolean blockAnvilPlaceholders;
+    private Boolean blockAnvilPlaceholdersSilently;
+    private Boolean disablePlaceholdersInName;
+    private Boolean disablePlaceholdersInLore;
+
+    private String placeholdersAreNotAllowedMessage;
 
     public PIMConfig() {
         super(PlaceholderItemMeta.getInstance().getDataFolder(), "config.yml");
@@ -30,6 +35,10 @@ public class PIMConfig extends CustomConfig {
     public void save() {
         put("whitelisted-persistent-data-containers", getWhitelistedPersistentDataContainers());
         put("block-anvil-placeholders", getBlockAnvilPlaceholders());
+        put("block-anvil-placeholders-silently", getBlockAnvilPlaceholdersSilently());
+        put("disable-placeholders-in-name", getDisablePlaceholdersInName());
+        put("disable-placeholders-in-lore", getDisablePlaceholdersInLore());
+        put("placeholders-are-not-allowed-message", getPlaceholdersAreNotAllowedMessage());
 
         try {
             super.save();
@@ -46,16 +55,45 @@ public class PIMConfig extends CustomConfig {
         return getBoolean(blockAnvilPlaceholders, "block-anvil-placeholders");
     }
 
+    public boolean getBlockAnvilPlaceholdersSilently() {
+        return getBoolean(blockAnvilPlaceholdersSilently, "block-anvil-placeholders-silently");
+    }
+
+
+    public boolean getDisablePlaceholdersInLore() {
+        return getBoolean(disablePlaceholdersInLore, "disable-placeholders-in-lore");
+    }
+
+    public boolean getDisablePlaceholdersInName() {
+        return getBoolean(disablePlaceholdersInName, "disable-placeholders-in-name");
+    }
+
+    public String getPlaceholdersAreNotAllowedMessage() {
+        var str = getString(placeholdersAreNotAllowedMessage, "placeholders-are-not-allowed-message");
+
+        if (str == null)
+            str = "<red>Placeholders are not allowed!";
+        return str;
+    }
+
     private boolean getBoolean(Boolean bool, String key) {
-        if(bool == null) {
+        if (bool == null) {
             bool = Boolean.parseBoolean(getStringKey(key));
         }
 
         return Boolean.TRUE.equals(bool);
     }
 
+    public String getString(String str, String key) {
+        if (str == null) {
+            str = getStringKey(key);
+        }
+
+        return str;
+    }
+
     private List<String> getStringList(List<String> array, String path) {
-        if(array == null) {
+        if (array == null) {
             array = getStringList(path);
         }
 
