@@ -19,7 +19,7 @@ import org.bukkit.inventory.AnvilInventory;
 public class SilentAnvilListener implements Listener {
 
     @EventHandler
-    public void prepareAnvilEvent(PrepareAnvilEvent event){
+    public void onPrepareAnvilEvent(PrepareAnvilEvent event){
         var inventory = event.getInventory();
 
         var result = inventory.getResult();

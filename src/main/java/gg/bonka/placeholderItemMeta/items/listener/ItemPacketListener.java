@@ -15,6 +15,7 @@ import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -81,6 +82,11 @@ public class ItemPacketListener {
 
         if (item == null || item.getType().isAir())
             return item;
+
+        if(player.getGameMode() == GameMode.CREATIVE && PIMConfig.getInstance().getDisablePlaceholdersForCreative())
+            return item;
+
+        item = item.clone();
 
         if (item.hasItemMeta()) {
             ItemMeta meta = item.getItemMeta();

@@ -4,6 +4,7 @@ import co.aikar.commands.PaperCommandManager;
 import gg.bonka.placeholderItemMeta.commands.PIMCommand;
 import gg.bonka.placeholderItemMeta.configuration.PIMConfig;
 import gg.bonka.placeholderItemMeta.items.listener.AnvilListener;
+import gg.bonka.placeholderItemMeta.items.listener.GameModeSwitchListener;
 import gg.bonka.placeholderItemMeta.items.listener.ItemPacketListener;
 import gg.bonka.placeholderItemMeta.items.listener.SilentAnvilListener;
 import gg.bonka.placeholderItemMeta.logging.ConsoleLogger;
@@ -23,6 +24,7 @@ public final class PlaceholderItemMeta extends JavaPlugin {
 
     private AnvilListener anvilListener;
     private SilentAnvilListener silentAnvilListener;
+    private GameModeSwitchListener gameModeSwitchListener;
 
     @Override
     public void onEnable() {
@@ -40,6 +42,7 @@ public final class PlaceholderItemMeta extends JavaPlugin {
 
         anvilListener = new AnvilListener();
         silentAnvilListener = new SilentAnvilListener();
+        gameModeSwitchListener = new GameModeSwitchListener();
 
         load();
 
@@ -57,6 +60,9 @@ public final class PlaceholderItemMeta extends JavaPlugin {
             Bukkit.getPluginManager().registerEvents(anvilListener, this);
         if (registerSilentListener)
             Bukkit.getPluginManager().registerEvents(silentAnvilListener, this);
+        if(PIMConfig.getInstance().getDisablePlaceholdersForCreative())
+            Bukkit.getPluginManager().registerEvents(gameModeSwitchListener, this);
+
     }
 
     @Override

@@ -19,3 +19,7 @@ placeholders-are-not-allowed-message: <red>Placeholders are not allowed!
 disable-placeholders-in-name: false
 #do not replace any placeholders in item's lore
 disable-placeholders-in-lore: false
+
+#Server accepts any item changes from players with creative game mode.
+#To prevent items corruption, better disable placeholders for players in creative mode
+disable-placeholders-for-creative: false

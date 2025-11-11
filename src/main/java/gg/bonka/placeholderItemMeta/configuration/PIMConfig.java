@@ -18,6 +18,7 @@ public class PIMConfig extends CustomConfig {
     private Boolean blockAnvilPlaceholdersSilently;
     private Boolean disablePlaceholdersInName;
     private Boolean disablePlaceholdersInLore;
+    private Boolean disablePlaceholdersForCreative;
 
     private String placeholdersAreNotAllowedMessage;
 
@@ -39,6 +40,7 @@ public class PIMConfig extends CustomConfig {
         put("disable-placeholders-in-name", getDisablePlaceholdersInName());
         put("disable-placeholders-in-lore", getDisablePlaceholdersInLore());
         put("placeholders-are-not-allowed-message", getPlaceholdersAreNotAllowedMessage());
+        put("disable-placeholders-for-creative", getDisablePlaceholdersForCreative());
 
         try {
             super.save();
@@ -62,6 +64,10 @@ public class PIMConfig extends CustomConfig {
 
     public boolean getDisablePlaceholdersInLore() {
         return getBoolean(disablePlaceholdersInLore, "disable-placeholders-in-lore");
+    }
+
+    public boolean getDisablePlaceholdersForCreative() {
+        return getBoolean(disablePlaceholdersForCreative, "disable-placeholders-for-creative");
     }
 
     public boolean getDisablePlaceholdersInName() {
