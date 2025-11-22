@@ -83,7 +83,7 @@ public class ItemPacketListener {
         if (item == null || item.getType().isAir())
             return item;
 
-        if(player.getGameMode() == GameMode.CREATIVE && PIMConfig.getInstance().getDisablePlaceholdersForCreative())
+        if (player.getGameMode() == GameMode.CREATIVE && PIMConfig.getInstance().getDisablePlaceholdersForCreative())
             return item;
 
         item = item.clone();
@@ -102,11 +102,11 @@ public class ItemPacketListener {
 
             if (!PIMConfig.getInstance().getDisablePlaceholdersInName()) {
                 String itemName = PlaceholderAPI.setPlaceholders(player, MiniMessage.miniMessage().serialize(item.effectiveName()));
-                meta.itemName(MiniMessage.miniMessage().deserialize(itemName));
+                meta.itemName(MiniMessage.miniMessage().deserialize(replaceLegacyToMiniMessage(itemName)));
 
                 if (meta.hasDisplayName()) {
                     String displayName = PlaceholderAPI.setPlaceholders(player, MiniMessage.miniMessage().serialize(Objects.requireNonNull(meta.displayName())));
-                    meta.displayName(MiniMessage.miniMessage().deserialize(displayName));
+                    meta.displayName(MiniMessage.miniMessage().deserialize(replaceLegacyToMiniMessage(displayName)));
                 }
             }
 
@@ -116,7 +116,7 @@ public class ItemPacketListener {
 
                 for (Component component : lore) {
                     String line = PlaceholderAPI.setPlaceholders(player, MiniMessage.miniMessage().serialize(component));
-                    newLore.add(MiniMessage.miniMessage().deserialize(line));
+                    newLore.add(MiniMessage.miniMessage().deserialize(replaceLegacyToMiniMessage(line)));
                 }
 
                 meta.lore(newLore);
@@ -131,5 +131,49 @@ public class ItemPacketListener {
         Bukkit.getPluginManager().callEvent(event);
 
         return event.getItem();
+    }
+
+    /**
+     * Replace legacy ampersand color codes to "modern" mini message format. <br>
+     * Example:
+     * §r§f123 -> \<reset>\<white>123
+     *
+     * @param legacy string with paragraph-based colors
+     * @return modern string with tag-based colors
+     */
+    public String replaceLegacyToMiniMessage(String legacy) {
+        //Taken from https://github.com/TehBrian/legacy-to-minimessage/blob/main/main.js
+
+        return legacy
+                .replace("§0", "<black>")
+                .replace("§1", "<dark_blue>")
+                .replace("§2", "<dark_green>")
+                .replace("§3", "<dark_aqua>")
+                .replace("§4", "<dark_red>")
+                .replace("§5", "<dark_purple>")
+                .replace("§6", "<gold>")
+                .replace("§7", "<gray>")
+                .replace("§8", "<dark_gray>")
+                .replace("§9", "<blue>")
+                .replace("§a", "<green>")
+                .replace("§b", "<aqua>")
+                .replace("§c", "<red>")
+                .replace("§d", "<light_purple>")
+                .replace("§e", "<yellow>")
+                .replace("§f", "<white>")
+
+
+                .replace("§n", "<underlined>")
+                .replace("§m", "<strikethrough>")
+                .replace("§k", "<obfuscated>")
+                .replace("§o", "<italic>")
+                .replace("§l", "<bold>")
+
+                //§#FFFFFF -> <#FFFFFF>
+                .replaceAll("§#([0-9a-fA-F]{6})", "<#$1>")
+
+                //<reset> have different behaviour than &r, so for lore we need also set <!italic>
+                .replace("§r", "<reset><!italic>");
+        
     }
 }
